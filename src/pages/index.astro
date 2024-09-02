@@ -1,8 +1,12 @@
 ---
-import App from "@/components/app/App";
+import AppShell from "@/components/app/AppShell.astro";
+import MultiLayout from "@/components/app/main/MultiLayout";
 import Layout from "@/layouts/Layout.astro";
 ---
 
 <Layout title="Mastodon Client">
-  <App />
+  <AppShell>
+    <Sidebar/>
+    <MultiLayout/>
+  </AppShell>
 </Layout>

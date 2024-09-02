@@ -16,10 +16,13 @@ export default function App() {
   (async () => {
     const postsIterable = masto.v1.timelines.public.list();
     console.log("postsIterable", postsIterable);
+    let n = 0
     for await (const p of postsIterable) {
-      console.log("p", p);
-      if (posts.length < 5) {
-        setPosts(posts().concat(p));
+      console.log(p)
+      setPosts(posts().concat(p))
+      n++;
+      if (n >= 5) {
+        break
       }
     }
   })();
@@ -30,7 +33,7 @@ export default function App() {
       <MultiLayout />
       <div>
         <pre>{
-        JSON.stringify(posts)
+        JSON.stringify(posts(),null, 2)
       }
         </pre>
       </div>
