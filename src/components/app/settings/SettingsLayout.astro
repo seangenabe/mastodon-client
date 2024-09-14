@@ -1,0 +1,21 @@
+---
+import AppContainer from "@/components/app/AppContainer.astro";
+import SettingsSidebar from "@/components/app/settings/SettingsSidebar.astro";
+import PageLayout from "@/layouts/Layout.astro";
+
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+---
+
+<PageLayout title={`Settings: ${name}`}>
+  <AppContainer>
+    <SettingsSidebar />
+    <div class="flex-1 p-2 sm:">
+      <h2 class="py-4 text-xl">{name}</h2>
+      <slot />
+    </div>
+  </AppContainer>
+</PageLayout>

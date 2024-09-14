@@ -1,0 +1,19 @@
+---
+import Sidebar from "@/components/app/sidebar/Sidebar.astro"
+import SidebarLink from "@/components/app/sidebar/SidebarLink.astro"
+import type { AstroInstance } from "astro";
+
+const pages = (await Astro.glob('/src/pages/settings/*.astro')) as (
+  AstroInstance & {name: string, order: number})[];
+
+pages.sort((a, b) => a.order - b.order)
+---
+<Sidebar>
+  <SidebarLink href="/">Home</SidebarLink>
+  <hr>
+  {pages
+    .map(({url, name}) =>
+    <SidebarLink href={url}>{name}</SidebarLink>
+    )
+  }
+</Sidebar>
