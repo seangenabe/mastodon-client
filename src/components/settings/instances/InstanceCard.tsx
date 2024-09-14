@@ -1,3 +1,4 @@
+import Button from "@/components/common/Button"
 import type { Instance } from "@/types/Instance"
 
 export default function InstanceCard({
@@ -11,14 +12,16 @@ export default function InstanceCard({
     <div class="flex flex-col md:min-h-32 bg-ctp-surface1 rounded-lg p-4">
       <div class="font-bold flex-1">{instance.name}</div>
       <div class="text-sm md:justify-end flex flex-row gap-4">
-        <button
+        <Button
+          variant="link"
           type="button"
-          class="text-ctp-red hover:underline active:underline block"
+          class="text-ctp-red block outline-ctp-red"
           title={`Delete the instance ${instance.name}`}
+          onClick={() => onDeleteClick(instance)}
         >
           <span class="icon-[fe--trash] mr-1"></span>
-          <span onClick={() => onDeleteClick(instance)}>Delete</span>
-        </button>
+          Delete
+        </Button>
       </div>
     </div>
   )
