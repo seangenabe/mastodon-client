@@ -1,11 +1,10 @@
 ---
+import InstanceManager from "@/components/settings/instances/InstanceManager";
 import SettingsLayout from "@/components/settings/SettingsLayout.astro";
 
 export const name = "Instances";
 export const order = -100;
 ---
 <SettingsLayout name={name}>
-    <div class="p-4 border bg-blue-900 border-neutral-300">
-      blah
-    </div>
+  <InstanceManager/>
 </SettingsLayout>

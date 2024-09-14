@@ -6,7 +6,7 @@ const { class: className, ...rest } = Astro.props;
 ---
 <a
   class:list={[
-    "px-4 py-2 block hover:bg-ctp-surface2 rounded-lg",
+    "px-4 py-2 block hover:bg-ctp-surface2 focus:bg-ctp-surface2 active:bg-ctp-surface2 rounded-lg",
     className,
   ]}
   {...rest}
