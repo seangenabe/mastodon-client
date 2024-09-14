@@ -48,7 +48,7 @@ export default function InstanceDeleteDialog({
             Cancel
           </Button>
           <Button type="button" variant="danger" onClick={deleteInstance}>
-            Delete <strong>{instanceName()}</strong>
+            Remove <strong>{instanceName()}</strong>
           </Button>
         </div>
       </div>

@@ -26,7 +26,7 @@ export default function InstanceManager() {
           />
         )}
       </For>
-      <InstanceAddCard class="" />
+      <InstanceAddCard />
       <InstanceDeleteDialog ref={setDialogRef} />
     </div>
   )

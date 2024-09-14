@@ -1,4 +1,5 @@
 ---
+import AccountManager from "@/components/settings/accounts/AccountManager";
 import SettingsLayout from "@/components/settings/SettingsLayout.astro";
 
 
@@ -6,4 +7,5 @@ export const name = "Accounts";
 export const order = -90;
 ---
 <SettingsLayout name={name}>
+  <AccountManager client:only="solid-js" />
 </SettingsLayout>

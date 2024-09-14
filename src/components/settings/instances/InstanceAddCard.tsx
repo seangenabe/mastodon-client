@@ -27,8 +27,8 @@ export default function InstanceAddCard({
     const instance: Instance = {
       name: instanceName,
     }
-
     instancesStore.set([...existingInstances, instance])
+
     e.currentTarget.reset()
     instanceNameInput.focus()
   }
@@ -54,12 +54,16 @@ export default function InstanceAddCard({
       )}
     >
       <form onSubmit={submitHandler} class="flex flex-col gap-4 h-full">
-        <div class="font-bold flex-1">
+        <div class="flex-1">
           <Input
-            class="w-full p-0 px-2"
+            class="w-full p-0 px-2 font-bold"
             name="instanceName"
             ref={instanceNameInput}
             onInput={nameInputHandler}
+            placeholder="mastodon.example"
+            aria-label="Instance name"
+            required
+            pattern="[^@]+"
           />
         </div>
         <div class="md:justify-end flex flex-row gap-4">
