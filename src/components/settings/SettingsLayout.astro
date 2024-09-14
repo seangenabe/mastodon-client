@@ -12,7 +12,9 @@ const { name } = Astro.props;
 
 <Layout title={`Settings: ${name}`}>
   <AppContainer>
-    <SettingsSidebar />
+    <div class="w-1/3 lg:w-fit lg:min-w-64">
+      <SettingsSidebar />
+    </div>
     <div class="flex-1 p-2 sm:">
       <h2 class="py-4 text-xl">{name}</h2>
       <slot />
