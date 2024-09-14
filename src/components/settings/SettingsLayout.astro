@@ -1,7 +1,7 @@
 ---
 import AppContainer from "@/components/app/AppContainer.astro";
-import SettingsSidebar from "@/components/app/settings/SettingsSidebar.astro";
-import PageLayout from "@/layouts/Layout.astro";
+import SettingsSidebar from "@/components/settings/SettingsSidebar.astro";
+import Layout from "@/layouts/Layout.astro"
 
 interface Props {
   name: string;
@@ -10,7 +10,7 @@ interface Props {
 const { name } = Astro.props;
 ---
 
-<PageLayout title={`Settings: ${name}`}>
+<Layout title={`Settings: ${name}`}>
   <AppContainer>
     <SettingsSidebar />
     <div class="flex-1 p-2 sm:">
@@ -18,4 +18,4 @@ const { name } = Astro.props;
       <slot />
     </div>
   </AppContainer>
-</PageLayout>
+</Layout>
