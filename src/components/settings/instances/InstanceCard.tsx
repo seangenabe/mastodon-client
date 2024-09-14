@@ -1,6 +1,12 @@
 import type { Instance } from "@/types/Instance"
 
-export default function InstanceCard({ instance }: { instance: Instance }) {
+export default function InstanceCard({
+  instance,
+  onDeleteClick = () => {},
+}: {
+  instance: Instance
+  onDeleteClick: (instance: Instance) => void
+}) {
   return (
     <div class="flex flex-col md:min-h-32 bg-ctp-surface1 rounded-lg p-4">
       <div class="font-bold flex-1">{instance.name}</div>
@@ -11,7 +17,7 @@ export default function InstanceCard({ instance }: { instance: Instance }) {
           title={`Delete the instance ${instance.name}`}
         >
           <span class="icon-[fe--trash] mr-1"></span>
-          <span>Delete</span>
+          <span onClick={() => onDeleteClick(instance)}>Delete</span>
         </button>
       </div>
     </div>
