@@ -44,7 +44,7 @@ export default function AccountDeleteDialog({
       class="delete-dialog p-4 bg-ctp-base rounded-lg border-4 border-ctp-red backdrop:bg-ctp-base text-ctp-text"
       ref={dialogRef}
     >
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 min-h-32 justify-evenly">
         <p>
           Are you sure you want to remove the account{" "}
           <strong>
