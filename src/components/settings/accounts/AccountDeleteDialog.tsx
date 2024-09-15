@@ -26,7 +26,6 @@ export default function AccountDeleteDialog({
   });
 
   const deleteAccount = () => {
-    const accounts = accountsStore.get();
     const currentAccount = account();
 
     if (!currentAccount) {
