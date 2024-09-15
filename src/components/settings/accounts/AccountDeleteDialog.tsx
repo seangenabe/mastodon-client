@@ -35,8 +35,7 @@ export default function AccountDeleteDialog({
 
     const accountKey = toString(currentAccount);
 
-    // TODO: undefined should be allowed: https://github.com/nanostores/nanostores/pull/336
-    accountsStore.setKey(accountKey, undefined as any);
+    accountsStore.setKey(accountKey, undefined);
 
     dialogRef.close();
   };

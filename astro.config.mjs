@@ -9,15 +9,20 @@ export default defineConfig({
   experimental: {
     env: {
       schema: {
-        MASTO_URL: envField.string({
+        MASTODON_CLIENT_NAME: envField.string({
           context: "client",
           access: "public",
-          default: "https://mastodon.social",
+          default: "Mastodon Client",
         }),
-        MASTO_ACCESS_TOKEN: envField.string({
+        MASTODON_CLIENT_WEBSITE: envField.string({
           context: "client",
           access: "public",
-          default: "",
+          default: "example.com",
+        }),
+        NODE_ENV: envField.string({
+          context: "client",
+          access: "public",
+          default: "development",
         }),
       },
     },

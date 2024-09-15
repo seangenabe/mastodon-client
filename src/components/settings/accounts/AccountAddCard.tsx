@@ -1,10 +1,8 @@
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
-import { accountsStore } from "@/stores/accounts";
 import { instancesStore } from "@/stores/instances";
-import { toString } from "@/types/Account";
 import { useStore } from "@nanostores/solid";
-import { For, type JSX } from "solid-js";
+import { createUniqueId, For, type JSX } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 function getFormValues(form: HTMLFormElement) {
@@ -27,27 +25,57 @@ export default function AccountAddCard({
   const submitHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (e) => {
     e.preventDefault();
 
-    const { username, instanceName } = getFormValues(formRef);
+    const { instanceName } = getFormValues(formRef);
+
+    if (!instanceName.trim()) {
+      return;
+    }
+
+    (async () => {
+      let loginInstance = instanceName;
+
+      try {
+        const res = await fetch(`https://${instanceName}/.well-know/host-meta`);
+
+        if (!res.ok) {
+          throw new Error("Instance not found");
+        }
+        const text = await res.text();
+
+        // Parse XML
+        const parser = new DOMParser();
+        const xmlDocument = parser.parseFromString(text, "text/xml");
+
+        // Get Link[template]
+        const link = xmlDocument.getElementsByName("Link")[0];
+        const template = link?.getAttribute("template");
+
+        if (!template) {
+          throw new Error("Error parsing host-meta");
+        }
+
+        const url = new URL(template);
+        const { host } = url;
+        if (instanceName !== host) {
+          loginInstance = host;
+        }
+
+      } catch (error) {
+        console.error(error);
+      }
+    })();
 
     // Add account
-    const account = { username, instanceName };
-    const accountKey = toString(account);
-    accountsStore.setKey(accountKey, account);
+    // const account = { username, instanceName };
+    // const accountKey = toString(account);
+    // accountsStore.setKey(accountKey, account);
 
-    e.currentTarget.reset();
-    usernameField.focus();
+    // e.currentTarget.reset();
+    // usernameField.focus();
   };
 
-  const changeHandler = () => {
-    const currentFormValues = getFormValues(formRef);
-    const accountKey = toString(currentFormValues);
-
-    if (accountsStore.get()[accountKey]) {
-      usernameField.setCustomValidity("Account has already been added");
-    } else {
-      usernameField.setCustomValidity("");
-    }
-  };
+  const instanceKeys = () => Object.entries(instances());
+  const listId = createUniqueId();
 
   return (
     <div
@@ -63,35 +91,25 @@ export default function AccountAddCard({
       >
         <div class="flex-1 flex">
           <label class="flex-1 flex flex-col gap-1">
-            <div class="text-sm">Username</div>
-            <Input
-              class="block w-full py-0 px-2 font-bold"
-              name="username"
-              pattern="[^@]+"
-              required
-              onInput={changeHandler}
-              ref={usernameField}
-            />
-          </label>
-          <label class="flex-1 flex flex-col gap-1">
             <div class="text-sm">Instance</div>
             <div class="flex align-baseline">
-              <div class="font-bold px-2">@</div>
-              <select
-                class="rounded-md bg-ctp-surface1 outline-4 hover:outline focus:outline active:outline outline-ctp-text block w-full flex-1 py-0 px-2 font-bold"
+              <Input
                 name="instanceName"
-                onSelect={changeHandler}
-              >
-                <For each={Object.entries(instances())}>
+                list={listId}
+                required
+                class="w-full"
+              />
+              <datalist id={listId}>
+                <For each={instanceKeys()}>
                   {([key]) => <option value={key}>{key}</option>}
                 </For>
-              </select>
+              </datalist>
             </div>
           </label>
         </div>
         <div class="md:justify-end flex flex-row gap-4">
           <Button variant="primary" type="submit">
-            Add account
+            Log in
           </Button>
         </div>
       </form>

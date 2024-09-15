@@ -1,36 +1,35 @@
-import Button from "@/components/common/Button"
-import { instancesStore } from "@/stores/instances"
-import { createSignal, onMount } from "solid-js"
+import Button from "@/components/common/Button";
+import { instancesStore } from "@/stores/instances";
+import { createSignal, onMount } from "solid-js";
 
 export interface InstanceDeleteDialogRef {
-  showModal(instanceName: string): void
+  showModal(instanceName: string): void;
 }
 
 export default function InstanceDeleteDialog({
   ref,
 }: {
-  ref?: (ref: InstanceDeleteDialogRef) => void
+  ref?: (ref: InstanceDeleteDialogRef) => void;
 }) {
-  const [instanceName, setInstanceName] = createSignal("")
-  let dialogRef!: HTMLDialogElement
+  const [instanceName, setInstanceName] = createSignal("");
+  let dialogRef!: HTMLDialogElement;
 
   onMount(() => {
     ref?.({
       showModal(inputInstanceName: string) {
-        setInstanceName(() => inputInstanceName)
-        dialogRef.showModal()
+        setInstanceName(() => inputInstanceName);
+        dialogRef.showModal();
       },
-    })
-  })
+    });
+  });
 
   const deleteInstance = () => {
     // Instance name is in nameOfInstanceToDelete
-    const name = instanceName()
-    // TODO: Should accept undefined https://github.com/nanostores/nanostores/pull/336
-    instancesStore.setKey(name, undefined as any)
+    const name = instanceName();
+    instancesStore.setKey(name, undefined);
 
-    dialogRef.close()
-  }
+    dialogRef.close();
+  };
 
   return (
     <dialog
@@ -52,5 +51,5 @@ export default function InstanceDeleteDialog({
         </div>
       </div>
     </dialog>
-  )
+  );
 }

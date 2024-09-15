@@ -18,7 +18,7 @@ export default function AccountManager() {
 
   return (
     <div class="grid lg:grid-cols-2 content-stretch gap-4">
-      <For each={Object.entries(accounts())} fallback="Loading...">
+      <For each={Object.entries(accounts())}>
         {([, account]) => (
           <AccountCard
             account={account}
@@ -26,7 +26,7 @@ export default function AccountManager() {
           />
         )}
       </For>
-      <AccountAddCard class="col-span-2" />
+      <AccountAddCard />
       <AccountDeleteDialog ref={setDialogRef} />
     </div>
   );
