@@ -24,12 +24,11 @@ export default function InstanceDeleteDialog({
   })
 
   const deleteInstance = () => {
-    const instances = instancesStore.get()
     // Instance name is in nameOfInstanceToDelete
     const name = instanceName()
-    const newInstances = instances.filter((x) => x.name !== name)
+    // TODO: Should accept undefined https://github.com/nanostores/nanostores/pull/336
+    instancesStore.setKey(name, undefined as any)
 
-    instancesStore.set(newInstances)
     dialogRef.close()
   }
 

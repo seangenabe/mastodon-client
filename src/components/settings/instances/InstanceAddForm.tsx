@@ -14,12 +14,8 @@ export default function InstanceAddForm() {
     }
 
     // Add instance
-    const existingInstances = instancesStore.get()
-    const instance: Instance = {
-      name: instanceName,
-    }
+    instancesStore.setKey(instanceName, {})
 
-    instancesStore.set([...existingInstances, instance])
     location.assign("/settings/instances")
   }
 
@@ -27,9 +23,13 @@ export default function InstanceAddForm() {
     e
   ) => {
     const currentValue = e.currentTarget.value
-    if (
-      instancesStore.get()?.some((instance) => instance.name === currentValue)
-    ) {
+
+    if (!currentValue?.trim()) {
+      e.currentTarget.setCustomValidity("Name cannot be empty")
+      return
+    }
+
+    if (instancesStore.get()[currentValue]) {
       e.currentTarget.setCustomValidity("Name already exists")
     } else {
       e.currentTarget.setCustomValidity("")

@@ -1,7 +1,6 @@
 import Button from "@/components/common/Button"
 import Input from "@/components/common/Input"
 import { instancesStore } from "@/stores/instances"
-import type { Instance } from "@/types/Instance"
 import type { JSX } from "solid-js"
 import { twMerge } from "tailwind-merge"
 
@@ -23,11 +22,7 @@ export default function InstanceAddCard({
     }
 
     // Add instance
-    const existingInstances = instancesStore.get()
-    const instance: Instance = {
-      name: instanceName,
-    }
-    instancesStore.set([...existingInstances, instance])
+    instancesStore.setKey(instanceName, {})
 
     e.currentTarget.reset()
     instanceNameInput.focus()
@@ -37,9 +32,11 @@ export default function InstanceAddCard({
     e
   ) => {
     const currentValue = e.currentTarget.value
-    if (
-      instancesStore.get()?.some((instance) => instance.name === currentValue)
-    ) {
+    if (!currentValue?.trim()) {
+      e.currentTarget.setCustomValidity("Name cannot be empty")
+      return
+    }
+    if (instancesStore.get()[currentValue]) {
       e.currentTarget.setCustomValidity("Name already exists")
     } else {
       e.currentTarget.setCustomValidity("")
