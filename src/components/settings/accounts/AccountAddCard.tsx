@@ -1,63 +1,59 @@
-import Button from "@/components/common/Button"
-import Input from "@/components/common/Input"
-import { accountsStore } from "@/stores/accounts"
-import { instancesStore } from "@/stores/instances"
-import { useStore } from "@nanostores/solid"
-import { For, type JSX } from "solid-js"
-import { twMerge } from "tailwind-merge"
+import Button from "@/components/common/Button";
+import Input from "@/components/common/Input";
+import { accountsStore } from "@/stores/accounts";
+import { instancesStore } from "@/stores/instances";
+import { toString } from "@/types/Account";
+import { useStore } from "@nanostores/solid";
+import { For, type JSX } from "solid-js";
+import { twMerge } from "tailwind-merge";
 
 function getFormValues(form: HTMLFormElement) {
-  const data = new FormData(form)
+  const data = new FormData(form);
   return {
     username: (data.get("username") as string | null)?.trim() ?? "",
     instanceName: (data.get("instanceName") as string | null)?.trim() ?? "",
-  }
+  };
 }
 
 export default function AccountAddCard({
   class: className = "",
 }: {
-  class?: string
+  class?: string;
 }) {
-  const instances = useStore(instancesStore)
-  let usernameField!: HTMLInputElement
-  let formRef!: HTMLFormElement
+  const instances = useStore(instancesStore);
+  let usernameField!: HTMLInputElement;
+  let formRef!: HTMLFormElement;
 
   const submitHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const { username, instanceName } = getFormValues(formRef)
+    const { username, instanceName } = getFormValues(formRef);
 
     // Add account
-    accountsStore.set([...accountsStore.get(), { username, instanceName }])
+    const account = { username, instanceName };
+    const accountKey = toString(account);
+    accountsStore.setKey(accountKey, account);
 
-    e.currentTarget.reset()
-    usernameField.focus()
-  }
+    e.currentTarget.reset();
+    usernameField.focus();
+  };
 
   const changeHandler = () => {
-    const currentFormValues = getFormValues(formRef)
+    const currentFormValues = getFormValues(formRef);
+    const accountKey = toString(currentFormValues);
 
-    if (
-      accountsStore
-        .get()
-        .some(
-          (account) =>
-            account.username === currentFormValues.username &&
-            account.instanceName === currentFormValues.instanceName
-        )
-    ) {
-      usernameField.setCustomValidity("Account has already been added")
+    if (accountsStore.get()[accountKey]) {
+      usernameField.setCustomValidity("Account has already been added");
     } else {
-      usernameField.setCustomValidity("")
+      usernameField.setCustomValidity("");
     }
-  }
+  };
 
   return (
     <div
       class={twMerge(
         "bg-ctp-surface0 rounded-lg p-4 border-4 border-ctp-surface1 border-dashed",
-        className
+        className,
       )}
     >
       <form
@@ -86,10 +82,8 @@ export default function AccountAddCard({
                 name="instanceName"
                 onSelect={changeHandler}
               >
-                <For each={instances()}>
-                  {(instance) => (
-                    <option value={instance.name}>{instance.name}</option>
-                  )}
+                <For each={Object.entries(instances())}>
+                  {([key]) => <option value={key}>{key}</option>}
                 </For>
               </select>
             </div>
@@ -102,5 +96,5 @@ export default function AccountAddCard({
         </div>
       </form>
     </div>
-  )
+  );
 }

@@ -1,43 +1,45 @@
-import { AccountLine } from "@/components/common/AccountLine"
-import Button from "@/components/common/Button"
-import { accountsStore } from "@/stores/accounts"
-import { equals, type Account } from "@/types/Account"
-import { createSignal, onMount, Show } from "solid-js"
+import { AccountLine } from "@/components/common/AccountLine";
+import Button from "@/components/common/Button";
+import { accountsStore } from "@/stores/accounts";
+import { type Account, toString } from "@/types/Account";
+import { createSignal, onMount, Show } from "solid-js";
 
 export interface AccountDeleteDialogRef {
-  showModal(account: Account): void
+  showModal(account: Account): void;
 }
 
 export default function AccountDeleteDialog({
   ref,
 }: {
-  ref?: (ref: AccountDeleteDialogRef) => void
+  ref?: (ref: AccountDeleteDialogRef) => void;
 }) {
-  const [account, setAccount] = createSignal<Account | null>(null)
-  let dialogRef!: HTMLDialogElement
+  const [account, setAccount] = createSignal<Account | null>(null);
+  let dialogRef!: HTMLDialogElement;
 
   onMount(() => {
     ref?.({
       showModal(account) {
-        setAccount(() => account)
-        dialogRef.showModal()
+        setAccount(() => account);
+        dialogRef.showModal();
       },
-    })
-  })
+    });
+  });
 
-  const deleteInstance = () => {
-    const accounts = accountsStore.get()
-    const a = account()
+  const deleteAccount = () => {
+    const accounts = accountsStore.get();
+    const currentAccount = account();
 
-    if (a == null) {
-      return
+    if (!currentAccount) {
+      return;
     }
 
-    const newAccounts = accounts.filter((x) => !equals(x, a))
+    const accountKey = toString(currentAccount);
 
-    accountsStore.set(newAccounts)
-    dialogRef.close()
-  }
+    // TODO: undefined should be allowed: https://github.com/nanostores/nanostores/pull/336
+    accountsStore.setKey(accountKey, undefined as any);
+
+    dialogRef.close();
+  };
 
   return (
     <dialog
@@ -58,7 +60,7 @@ export default function AccountDeleteDialog({
           <Button type="button" onClick={() => dialogRef.close()}>
             Cancel
           </Button>
-          <Button type="button" variant="danger" onClick={deleteInstance}>
+          <Button type="button" variant="danger" onClick={deleteAccount}>
             Delete{" "}
             <strong>
               <Show when={account()}>
@@ -69,5 +71,5 @@ export default function AccountDeleteDialog({
         </div>
       </div>
     </dialog>
-  )
+  );
 }

@@ -1,7 +1,9 @@
-import type { Account } from "@/types/Account"
-import { persistentAtom } from "@nanostores/persistent"
+import { json } from "@/stores/utils/json";
+import type { Account } from "@/types/Account";
+import { persistentMap } from "@nanostores/persistent";
 
-export const accountsStore = persistentAtom<Account[]>("accounts", [], {
-  encode: JSON.stringify,
-  decode: JSON.parse
-})
+export const accountsStore = persistentMap<Record<string, Account>>(
+  "account:",
+  {},
+  json,
+);
