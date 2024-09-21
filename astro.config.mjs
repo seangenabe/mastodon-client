@@ -17,12 +17,17 @@ export default defineConfig({
         MASTODON_CLIENT_WEBSITE: envField.string({
           context: "client",
           access: "public",
-          default: "example.com",
+          default: "https://example.com/",
         }),
         NODE_ENV: envField.string({
           context: "client",
           access: "public",
           default: "development",
+        }),
+        MASTODON_CLIENT_REDIRECT_URI: envField.string({
+          context: "client",
+          access: "public",
+          default: "", // defaults to MASTODON_CLIENT_WEBSITE if blank
         }),
       },
     },

@@ -1,8 +1,8 @@
 export interface Account {
-  username: string
-  instanceName: string
+  username: string;
+  instanceName: string;
 }
 
 export function toString(a: Account) {
-  return `${a.username}@${a.instanceName}`
+  return `${a.username}@${a.instanceName}`;
 }

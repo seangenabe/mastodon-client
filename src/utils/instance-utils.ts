@@ -1,20 +1,23 @@
 import { instancesStore } from "@/stores/instances";
+import type { Instance } from "@/types/Instance";
+import { mergeIntoMap } from "@/utils/nanostores";
 import {
   MASTODON_CLIENT_NAME,
   MASTODON_CLIENT_REDIRECT_URI,
   MASTODON_CLIENT_WEBSITE,
 } from "astro:env/client";
 import { createRestAPIClient } from "masto";
+import type { MapStore } from "nanostores";
 
 const DEFAULT_SCOPES = "read write follow push";
 
-export async function getClientForInstance(instanceKey: string) {
+export async function getClientForInstance(realInstanceKey: string) {
   const instances = instancesStore.get();
-  const instance = instances[instanceKey];
+  const instance = instances[realInstanceKey];
 
   if (!instance?.client) {
     const masto = createRestAPIClient({
-      url: instanceKey,
+      url: `https://${realInstanceKey}`,
     });
 
     const client = await masto.v1.apps.create({
@@ -24,9 +27,17 @@ export async function getClientForInstance(instanceKey: string) {
       scopes: DEFAULT_SCOPES,
     });
 
-    instancesStore.setKey(instanceKey, {
-      ...(instancesStore.get()[instanceKey] ?? {}),
-      client,
-    });
+    mergeIntoMap(
+      instancesStore as MapStore<Record<string, Instance>>,
+      realInstanceKey,
+      {
+        client,
+      },
+      () => ({}),
+    );
+
+    return client;
   }
+
+  return instance?.client;
 }

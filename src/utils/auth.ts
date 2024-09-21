@@ -1,8 +1,10 @@
-import { generateCodeChallenge, verifier } from "@/utils/oauth-pkce";
 import {
-  MASTODON_CLIENT_NAME,
-  MASTODON_CLIENT_WEBSITE,
-} from "astro:env/client";
+  generateCodeChallenge,
+  supportsPkce,
+  verifier,
+} from "@/utils/oauth-pkce";
+import { MASTODON_CLIENT_WEBSITE } from "astro:env/client";
+import ky from "ky";
 
 const isSameHost = MASTODON_CLIENT_WEBSITE
   ? MASTODON_CLIENT_WEBSITE.toLowerCase().includes(
@@ -15,55 +17,64 @@ const DEFAULT_REDIRECT_URI = isSameHost
   : currentLocation;
 const DEFAULT_SCOPE = "read write follow push";
 
-export async function registerApplication(
-  {
-    instanceHostname,
-    clientName = MASTODON_CLIENT_NAME,
-    redirectUris = DEFAULT_REDIRECT_URI,
-    scopes = DEFAULT_SCOPE,
-    website = MASTODON_CLIENT_WEBSITE,
-  }: {
-    instanceHostname: string;
-    clientName?: string;
-    redirectUris?: string;
-    scopes?: string;
-    website?: string;
-  },
-) {
-  const registrationParams = new URLSearchParams({
-    client_name: clientName,
-    redirect_uris: redirectUris,
-    scopes,
-    website,
-  });
+export async function getRealInstanceHost(instanceName: string) {
+  let realInstanceHost: string = instanceName;
+  const text = await ky(`https://${instanceName}/.well-known/host-meta`).text();
 
-  const registrationResponse = await fetch(
-    `https://${instanceHostname}/api/v1/apps`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: registrationParams,
-    },
-  );
+  // Parse XML
+  const parser = new DOMParser();
+  const xmlDocument = parser.parseFromString(text, "text/xml");
 
-  if (!registrationResponse.ok) {
-    throw new Error("Application registration failed");
+  // Get Link[template]
+  const link = xmlDocument.getElementsByTagName("Link")[0];
+  const template = link?.getAttribute("template");
+
+  if (!template) {
+    throw new Error("Error parsing host-meta");
   }
 
-  const { client_id, client_secret, vapid_key } = await registrationResponse
-    .json() as {
-      client_id: string;
-      client_secret: string;
-      vapid_key: string;
-    };
+  const url = new URL(template);
+  const { host } = url;
+  if (instanceName !== host) {
+    realInstanceHost = host;
+  }
 
-  return {
-    clientId: client_id,
-    clientSecret: client_secret,
-    vapidKey: vapid_key,
-  };
+  return realInstanceHost;
+}
+
+export async function getMatchingAuthorizationUrl(
+  {
+    instanceHostname,
+    clientId,
+    redirectUri = DEFAULT_REDIRECT_URI,
+    scope = DEFAULT_SCOPE,
+  }: {
+    instanceHostname: string;
+    clientId: string;
+    redirectUri?: string;
+    scope?: string;
+  },
+): Promise<{ url: string; codeVerifier?: string }> {
+  const isPkceSupported = await supportsPkce({ instanceHostname });
+
+  if (isPkceSupported) {
+    const { url, codeVerifier } = await getPkceAuthorizationUrl({
+      instanceHostname,
+      clientId,
+      redirectUri,
+      scope,
+    });
+
+    return { url, codeVerifier };
+  }
+
+  const url = await getAuthorizationUrl({
+    instanceHostname,
+    clientId,
+    redirectUri,
+    scope,
+  });
+  return { url };
 }
 
 export async function getPkceAuthorizationUrl(
@@ -73,7 +84,7 @@ export async function getPkceAuthorizationUrl(
     redirectUri = DEFAULT_REDIRECT_URI,
     scope = DEFAULT_SCOPE,
   }: {
-    instanceHostname: string;
+    instanceHostname: RealInstanceKey;
     clientId: string;
     redirectUri?: string;
     scope?: string;
@@ -105,7 +116,7 @@ export async function getAuthorizationUrl({
   redirectUri = DEFAULT_REDIRECT_URI,
   scope = DEFAULT_SCOPE,
 }: {
-  instanceHostname: string;
+  instanceHostname: RealInstanceKey;
   clientId: string;
   redirectUri?: string;
   scope?: string;

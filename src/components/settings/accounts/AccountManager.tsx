@@ -18,7 +18,7 @@ export default function AccountManager() {
 
   return (
     <div class="grid lg:grid-cols-2 content-stretch gap-4">
-      <For each={Object.entries(accounts())}>
+      <For each={Object.entries(accounts() as Record<string, Account>)}>
         {([, account]) => (
           <AccountCard
             account={account}

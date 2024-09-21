@@ -1,8 +1,14 @@
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
+import Spinner from "@/components/common/Spinner";
 import { instancesStore } from "@/stores/instances";
+import type { Instance } from "@/types/Instance";
+import { getMatchingAuthorizationUrl, getRealInstanceHost } from "@/utils/auth";
+import { getClientForInstance } from "@/utils/instance-utils";
+import { mergeIntoMap } from "@/utils/nanostores";
 import { useStore } from "@nanostores/solid";
-import { createUniqueId, For, type JSX } from "solid-js";
+import type { MapStore } from "nanostores";
+import { createSignal, createUniqueId, For, type JSX, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 function getFormValues(form: HTMLFormElement) {
@@ -21,54 +27,54 @@ export default function AccountAddCard({
   const instances = useStore(instancesStore);
   let usernameField!: HTMLInputElement;
   let formRef!: HTMLFormElement;
+  const [loading, setLoading] = createSignal(false);
 
   const submitHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (e) => {
     e.preventDefault();
 
-    const { instanceName } = getFormValues(formRef);
+    setLoading(true);
 
-    if (!instanceName.trim()) {
+    const formValues = getFormValues(formRef);
+    const userInputInstanceKey = formValues
+      .instanceName;
+
+    if (!userInputInstanceKey.trim()) {
       return;
     }
 
     (async () => {
-      let loginInstance = instanceName;
-
       try {
-        const res = await fetch(`https://${instanceName}/.well-know/host-meta`);
+        const realInstanceHost = await getRealInstanceHost(
+          userInputInstanceKey,
+        );
+        const client = await getClientForInstance(realInstanceHost);
+        const { url, codeVerifier } = await getMatchingAuthorizationUrl({
+          instanceHostname: realInstanceHost,
+          clientId: client.clientId!,
+        });
 
-        if (!res.ok) {
-          throw new Error("Instance not found");
-        }
-        const text = await res.text();
-
-        // Parse XML
-        const parser = new DOMParser();
-        const xmlDocument = parser.parseFromString(text, "text/xml");
-
-        // Get Link[template]
-        const link = xmlDocument.getElementsByName("Link")[0];
-        const template = link?.getAttribute("template");
-
-        if (!template) {
-          throw new Error("Error parsing host-meta");
-        }
-
-        const url = new URL(template);
-        const { host } = url;
-        if (instanceName !== host) {
-          loginInstance = host;
+        if (codeVerifier) {
+          mergeIntoMap(
+            instancesStore as MapStore<Record<string, Instance>>,
+            realInstanceHost,
+            { codeVerifier },
+            () => ({}),
+          );
         }
 
+        // Redirect to auth url
+        location.href = url;
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     })();
 
     // Add account
     // const account = { username, instanceName };
     // const accountKey = toString(account);
-    // accountsStore.setKey(accountKey, account);
+    // accountsStore.setKey(accountKey, ac unt);
 
     // e.currentTarget.reset();
     // usernameField.focus();
@@ -107,8 +113,13 @@ export default function AccountAddCard({
             </div>
           </label>
         </div>
-        <div class="md:justify-end flex flex-row gap-4">
-          <Button variant="primary" type="submit">
+        <div class="md:justify-end flex flex-row gap-4 align-middle">
+          <Show when={loading()}>
+            <div class="flex flex-col justify-center">
+              <Spinner label="Preparing login page on Mastodon instance, please wait." />
+            </div>
+          </Show>
+          <Button variant="primary" type="submit" disabled={loading()}>
             Log in
           </Button>
         </div>
