@@ -1,4 +1,14 @@
 ---
+import AppContainer from "@/components/app/AppContainer.astro";
 import CodeReceiver from "@/components/settings/accounts/CodeReceiver";
+import Layout from "@/layouts/Layout.astro";
 ---
-<CodeReceiver client:only="solid-js" />
+<Layout title="Mastodon Client">
+  <AppContainer>
+    <div class="flex-1">
+      <div class="mx-auto max-w-96 flex flex-col gap-4">
+        <CodeReceiver client:only="solid-js" />
+      </div>
+    </div>
+  </AppContainer>
+</Layout>

@@ -8,7 +8,7 @@ export default function Spinner({
       <span class="sr-only">{label}</span>
       <svg
         aria-hidden="true"
-        class="w-8 h-8 text-ctp-mantle animate-spin fill-ctp-blue"
+        class="w-8 h-8 text-ctp-mantle animate-spin fill-ctp-blue inline"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

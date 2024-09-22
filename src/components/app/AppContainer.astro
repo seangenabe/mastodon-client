@@ -9,7 +9,7 @@
 <script>
 const code = new URLSearchParams(location.search).get("code");
 
-if (code) {
+if (location.pathname !== "/auth/receive-code" && code) {
   // Redirect to receive-code
   const newUrl = new URL(location.href);
   newUrl.pathname = "/auth/receive-code";
