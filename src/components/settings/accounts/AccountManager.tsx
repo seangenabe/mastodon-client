@@ -12,15 +12,16 @@ export default function AccountManager() {
   const accounts = useStore(accountsStore);
   const [dialogRef, setDialogRef] = createSignal<AccountDeleteDialogRef>();
 
-  const promptDeleteAccount = (account: Account) => {
-    dialogRef()?.showModal(account);
+  const promptDeleteAccount = (accountKey: string, account: Account) => {
+    dialogRef()?.showModal(accountKey, account);
   };
 
   return (
     <div class="grid lg:grid-cols-2 content-stretch gap-4">
       <For each={Object.entries(accounts() as Record<string, Account>)}>
-        {([, account]) => (
+        {([accountKey, account]) => (
           <AccountCard
+            accountKey={accountKey}
             account={account}
             onDeleteClick={promptDeleteAccount}
           />

@@ -1,25 +1,27 @@
 import { AccountLine } from "@/components/common/AccountLine";
 import Button from "@/components/common/Button";
 import { accountsStore } from "@/stores/accounts";
-import { type Account, toString } from "@/types/Account";
+import { type Account } from "@/types/Account";
 import { createSignal, onMount, Show } from "solid-js";
 
 export interface AccountDeleteDialogRef {
-  showModal(account: Account): void;
+  showModal(accountKey: string, account: Account): void;
 }
 
 export default function AccountDeleteDialog({
   ref,
 }: {
-  ref?: (ref: AccountDeleteDialogRef) => void;
+  ref?(ref: AccountDeleteDialogRef): void;
 }) {
+  const [accountKey, setAccountKey] = createSignal<string>("");
   const [account, setAccount] = createSignal<Account | null>(null);
   let dialogRef!: HTMLDialogElement;
 
   onMount(() => {
     ref?.({
-      showModal(account) {
-        setAccount(() => account);
+      showModal(accountKey, account) {
+        setAccountKey(accountKey);
+        setAccount(account);
         dialogRef.showModal();
       },
     });
@@ -32,9 +34,7 @@ export default function AccountDeleteDialog({
       return;
     }
 
-    const accountKey = toString(currentAccount);
-
-    accountsStore.setKey(accountKey, undefined);
+    accountsStore.setKey(accountKey(), undefined);
 
     dialogRef.close();
   };

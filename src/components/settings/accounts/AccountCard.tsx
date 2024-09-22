@@ -1,13 +1,15 @@
-import { AccountLine } from "@/components/common/AccountLine"
-import Button from "@/components/common/Button"
-import { toString, type Account } from "@/types/Account"
+import { AccountLine } from "@/components/common/AccountLine";
+import Button from "@/components/common/Button";
+import { type Account, toString } from "@/types/Account";
 
 export default function AccountCard({
+  accountKey,
   account,
   onDeleteClick = () => {},
 }: {
-  account: Account
-  onDeleteClick?(account: Account): void
+  accountKey: string;
+  account: Account;
+  onDeleteClick?(accountKey: string, account: Account): void;
 }) {
   return (
     <div class="flex flex-col md:min-h-32 bg-ctp-surface1 rounded-lg p-4">
@@ -20,12 +22,12 @@ export default function AccountCard({
           type="button"
           class="text-ctp-red block outline-ctp-red"
           title={`Remove the account ${toString(account)}`}
-          onClick={() => onDeleteClick(account)}
+          onClick={() => onDeleteClick(accountKey, account)}
         >
           <span class="icon-[fe--trash] mr-1"></span>
           Remove
         </Button>
       </div>
     </div>
-  )
+  );
 }
