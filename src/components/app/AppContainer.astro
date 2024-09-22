@@ -1,5 +1,21 @@
 ---
+
 ---
-<div class="flex bg-ctp-base text-ctp-text gap-4 h-screen container mx-auto pt-4">
-  <slot/>
+<div
+  class="flex bg-ctp-base text-ctp-text gap-4 h-screen container mx-auto pt-4"
+>
+  <slot />
 </div>
+<script>
+const code = new URLSearchParams(location.search).get("code");
+
+if (code) {
+  // Redirect to receive-code
+  const newUrl = new URL(location.href);
+  newUrl.pathname = "/auth/receive-code";
+  newUrl.search = new URLSearchParams({
+    code,
+  }).toString();
+  location.href = newUrl.toString();
+}
+</script>

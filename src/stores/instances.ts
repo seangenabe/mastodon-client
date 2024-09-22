@@ -1,6 +1,6 @@
 import { json } from "@/stores/utils/json";
 import type { Instance } from "@/types/Instance";
-import { persistentMap } from "@nanostores/persistent";
+import { persistentAtom, persistentMap } from "@nanostores/persistent";
 
 export const instancesStore = persistentMap<
   Partial<Record<string, Instance>>
@@ -9,3 +9,5 @@ export const instancesStore = persistentMap<
   {},
   json,
 );
+
+export const currentInstance = persistentAtom<string>("currentInstance", "");

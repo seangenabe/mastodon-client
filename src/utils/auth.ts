@@ -3,8 +3,11 @@ import {
   supportsPkce,
   verifier,
 } from "@/utils/oauth-pkce";
+import { camelCaseKeys } from "@/utils/strings";
+import { assert } from "@std/assert";
 import { MASTODON_CLIENT_WEBSITE } from "astro:env/client";
 import ky from "ky";
+import { type mastodon } from "masto";
 
 const isSameHost = MASTODON_CLIENT_WEBSITE
   ? MASTODON_CLIENT_WEBSITE.toLowerCase().includes(
@@ -84,7 +87,7 @@ export async function getPkceAuthorizationUrl(
     redirectUri = DEFAULT_REDIRECT_URI,
     scope = DEFAULT_SCOPE,
   }: {
-    instanceHostname: RealInstanceKey;
+    instanceHostname: string;
     clientId: string;
     redirectUri?: string;
     scope?: string;
@@ -116,7 +119,7 @@ export async function getAuthorizationUrl({
   redirectUri = DEFAULT_REDIRECT_URI,
   scope = DEFAULT_SCOPE,
 }: {
-  instanceHostname: RealInstanceKey;
+  instanceHostname: string;
   clientId: string;
   redirectUri?: string;
   scope?: string;
@@ -132,4 +135,70 @@ export async function getAuthorizationUrl({
   );
   authorizationUrl.search = params.toString();
   return authorizationUrl.toString();
+}
+
+export async function getAccessToken(
+  {
+    instanceHostname,
+    client,
+    code,
+    codeVerifier,
+    redirectUri = DEFAULT_REDIRECT_URI,
+    scope = DEFAULT_SCOPE,
+  }: {
+    instanceHostname: string;
+    client: Required<Pick<mastodon.v1.Client, "clientId" | "clientSecret">>;
+    code: string;
+    codeVerifier?: string | undefined;
+    redirectUri?: string | undefined;
+    scope?: string;
+  },
+) {
+  const { clientId, clientSecret } = client;
+  assert(clientId);
+  assert(clientSecret);
+
+  const createTokenParams = new URLSearchParams({
+    client_id: clientId,
+    grant_type: "authorization_code",
+    redirect_uri: redirectUri,
+    code,
+    scope,
+  });
+  if (clientSecret) {
+    createTokenParams.append("client_secret", clientSecret);
+  }
+  if (codeVerifier) {
+    createTokenParams.append("code_verifier", codeVerifier);
+  }
+  console.log("createTokenParams", createTokenParams);
+  const token = (await ky.post(
+    `https://${instanceHostname}/oauth/token`,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: createTokenParams,
+    },
+  ).json()) as {
+    access_token: string;
+    token_type: string;
+    scope: string;
+    created_at: number;
+  };
+  console.log(token);
+  return camelCaseKeys(token);
+}
+
+export function requireClientIdSecret(
+  client: mastodon.v1.Client,
+): asserts client is
+  & mastodon.v1.Client
+  & Required<
+    Pick<mastodon.v1.Client, "clientId" | "clientSecret">
+  >
+{
+  const { clientId, clientSecret } = client;
+  assert(clientId);
+  assert(clientSecret);
 }

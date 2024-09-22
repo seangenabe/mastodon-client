@@ -1,7 +1,7 @@
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Spinner from "@/components/common/Spinner";
-import { instancesStore } from "@/stores/instances";
+import { currentInstance, instancesStore } from "@/stores/instances";
 import type { Instance } from "@/types/Instance";
 import { getMatchingAuthorizationUrl, getRealInstanceHost } from "@/utils/auth";
 import { getClientForInstance } from "@/utils/instance-utils";
@@ -62,6 +62,8 @@ export default function AccountAddCard({
           );
         }
 
+        // Set current instance to request authorization from
+        currentInstance.set(realInstanceHost);
         // Redirect to auth url
         location.href = url;
       } catch (error) {
