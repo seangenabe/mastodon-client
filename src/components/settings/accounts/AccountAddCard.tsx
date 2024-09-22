@@ -25,7 +25,6 @@ export default function AccountAddCard({
   class?: string;
 }) {
   const instances = useStore(instancesStore);
-  let usernameField!: HTMLInputElement;
   let formRef!: HTMLFormElement;
   const [loading, setLoading] = createSignal(false);
 
@@ -72,14 +71,6 @@ export default function AccountAddCard({
         setLoading(false);
       }
     })();
-
-    // Add account
-    // const account = { username, instanceName };
-    // const accountKey = toString(account);
-    // accountsStore.setKey(accountKey, ac unt);
-
-    // e.currentTarget.reset();
-    // usernameField.focus();
   };
 
   const instanceKeys = () => Object.entries(instances());
