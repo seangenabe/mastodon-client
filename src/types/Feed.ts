@@ -1,10 +1,23 @@
-import type { Post } from "@/types/Post";
-import type { PostGroup } from "@/types/PostGroup";
+export type WithTitle = {
+  title: string;
+};
+
+export type HomeFeed = WithTitle & {
+  type: "home";
+  accountId: string;
+};
+
+export type ListFeed = WithTitle & {
+  type: "list";
+  accountId: string;
+};
+
+export type SearchFeed = WithTitle & {
+  type: "search";
+  accountId?: string;
+};
 
 /**
  * A viewable user-selectable view of social media posts with a title.
  */
-export interface Feed {
-  title: string;
-  viewItem: (Post | PostGroup)[]
-}
+export type Feed = HomeFeed | ListFeed | SearchFeed;

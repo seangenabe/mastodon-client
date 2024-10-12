@@ -1,9 +1,11 @@
 ---
-// import FeedsManager from "@/components/settings/feeds/FeedsManager";
+import FeedManager from "@/components/settings/feeds/FeedManager";
 import SettingsLayout from "@/components/settings/SettingsLayout.astro";
 
 export const name = "Feeds";
 export const order = -80;
 ---
 
-<SettingsLayout name={name}> </SettingsLayout>
+<SettingsLayout name={name}>
+  <FeedManager client:only="solidjs" />
+</SettingsLayout>
