@@ -85,7 +85,7 @@ export default function FeedCard(
                 </SourceCardWrapper>
               )}
             </For>
-            <AddFeedSourceCard />
+            <AddFeedSourceCard feedIndex={index} />
           </div>
         </section>
       </div>
