@@ -39,7 +39,7 @@ export function AddSourceDialog({
 
   return (
     <dialog
-      class="p-4 bg-ctp-base rounded-lg border-4 border-ctp-surface1 backdrop:bg-ctp-base text-ctp-text"
+      class="p-4 bg-ctp-base rounded-lg border-4 border-ctp-surface1 backdrop:bg-gray-600/80 text-ctp-text"
       ref={dialogRef}
     >
       <div class="mb-4 flex justify-between">

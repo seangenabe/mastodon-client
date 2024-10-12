@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 import catppuccin from "@catppuccin/tailwindcss";
 import { addDynamicIconSelectors } from "@iconify/tailwind";
-import plugin from "tailwindcss/plugin";
 import colors from "tailwindcss/colors";
+import plugin from "tailwindcss/plugin";
 
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
@@ -15,8 +15,5 @@ export default {
       defaultFlavour: "mocha",
     }),
     addDynamicIconSelectors(),
-    plugin(function({addVariant}) {
-      addVariant("backdrop", "&::backdrop");
-    }),
   ],
 };
