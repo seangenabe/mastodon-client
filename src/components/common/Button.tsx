@@ -1,7 +1,7 @@
 import type { JSX } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-type ButtonProps = JSX.IntrinsicElements["button"] & {
+export type ButtonProps = JSX.IntrinsicElements["button"] & {
   variant?: "default" | "danger" | "primary" | "link";
 };
 

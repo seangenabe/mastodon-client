@@ -28,7 +28,7 @@ export function Home({ onSubmit, request }: {
 
     onSubmit({
       source: { accountId, type: "home" },
-      feedPartial: { title: "Home" },
+      feedPartial: { title: t().defaultTitle_home },
     });
   };
 

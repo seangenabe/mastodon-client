@@ -1,3 +1,5 @@
+import CloseButton from "@/components/common/CloseButton";
+import FeedSourceForm from "@/components/settings/feeds/FeedSourceForm";
 import type { FeedSource } from "@/types/Feed";
 import { onMount } from "solid-js";
 
@@ -25,11 +27,26 @@ export function AddSourceDialog({
     });
   });
 
+  const handleSubmit = ({ source }: { source: FeedSource }) => {
+    dialogRef.close();
+    resolve?.(source);
+  };
+
+  const handleClose = () => {
+    dialogRef.close();
+    resolve?.(undefined);
+  };
+
   return (
     <dialog
       class="p-4 bg-ctp-base rounded-lg border-4 border-ctp-surface1 backdrop:bg-ctp-base text-ctp-text"
       ref={dialogRef}
     >
+      <div class="mb-4 flex justify-between">
+        <h1 class="text-lg font-bold">Add a new feed source</h1>
+        <CloseButton onClick={handleClose} />
+      </div>
+      <FeedSourceForm requestedResult="source" onSubmit={handleSubmit} />
     </dialog>
   );
 }
