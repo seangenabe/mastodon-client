@@ -1,6 +1,6 @@
 import { accountsStore } from "@/stores/accounts";
 import { feedsStore } from "@/stores/feeds";
-import type { Feed, HomeFeed } from "@/types/Feed";
+import type { Feed, FeedSource } from "@/types/Feed";
 import { plaintextAccountLine } from "@/utils/plaintext-account-line";
 import { createSignal, For, Show } from "solid-js";
 
@@ -8,7 +8,7 @@ const TAB_LABELS = {
   home: "Home feed",
   list: "List feed",
   search: "Search feed",
-} as const satisfies Record<Feed["type"], string>;
+} as const satisfies Record<FeedSource["type"], string>;
 
 export function AddHomeFeed() {
   let form!: HTMLFormElement;
@@ -25,10 +25,14 @@ export function AddHomeFeed() {
       return;
     }
 
-    const feed: HomeFeed = {
+    const feed: Feed = {
       title: "Home",
-      type: "home",
-      accountId: accountId,
+      sources: [
+        {
+          type: "home",
+          accountId: accountId,
+        },
+      ],
     };
 
     feedsStore.set([...feedsStore.get(), feed]);
@@ -57,7 +61,10 @@ export function AddHomeFeed() {
       </select>
       <div></div>
       <div>
-        <button type="submit" class="bg-ctp-blue text-black p-2 rounded-lg">
+        <button
+          type="submit"
+          class="bg-ctp-blue text-black px-4 py-2 rounded-lg"
+        >
           Add feed
         </button>
       </div>
@@ -66,13 +73,15 @@ export function AddHomeFeed() {
 }
 
 export default function AddFeedCard() {
-  const [feedType, setFeedType] = createSignal<Feed["type"]>("home");
+  const [feedType, setFeedType] = createSignal<FeedSource["type"]>("home");
 
   return (
     <div class="bg-ctp-surface0 rounded-lg p-4 border-4 border-ctp-surface1 border-dashed">
       <h2 class="font-bold mb-4 mt-2 text-lg">Add a new feed</h2>
       <ul class="flex mb-4 flex-wrap text-center text-gray-500 dark:text-gray-400 gap-4">
-        <For each={Object.entries(TAB_LABELS) as [Feed["type"], string][]}>
+        <For
+          each={Object.entries(TAB_LABELS) as [FeedSource["type"], string][]}
+        >
           {([key, label]) => (
             <li>
               <button

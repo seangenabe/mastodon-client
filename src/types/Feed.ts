@@ -1,23 +1,24 @@
-export type WithTitle = {
-  title: string;
-};
-
-export type HomeFeed = WithTitle & {
+export interface HomeFeedSource {
   type: "home";
   accountId: string;
-};
+}
 
-export type ListFeed = WithTitle & {
+export interface ListFeedSource {
   type: "list";
   accountId: string;
-};
+}
 
-export type SearchFeed = WithTitle & {
+export interface SearchFeedSource {
   type: "search";
   accountId?: string;
-};
+}
+
+export type FeedSource = HomeFeedSource | ListFeedSource | SearchFeedSource;
 
 /**
  * A viewable user-selectable view of social media posts with a title.
  */
-export type Feed = HomeFeed | ListFeed | SearchFeed;
+export interface Feed {
+  title: string;
+  sources: FeedSource[];
+}
